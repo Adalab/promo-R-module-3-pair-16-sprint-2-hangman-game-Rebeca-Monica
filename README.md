@@ -1,1 +1,1 @@
-# promo-R-module-3-pair-16-sprint-2-hangman-game-Rebeca-Monica
+# promo-r-module-3-pair-1-sprint-1-hangman-game
