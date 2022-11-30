@@ -6,9 +6,9 @@ function App() {
 
 //VARIABLES ESTADO
   const [numberOfErrors, setNumberOfErrors] = useState(0);
-
   const [lastLetter, setLastLetter] = useState('');
   const [word, setWord] = useState('katakroker');
+  const [userLetters, setuserLetters] = useState([]);
 
 //USE EFFECT
 
@@ -27,6 +27,11 @@ function App() {
     const regex = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü]{0,1}/;
     if (regex.test(event.target.value)){
     setLastLetter(event.target.value);
+
+      if(event.target.value !== "") {
+        setuserLetters([...userLetters, event.target.value]);
+      }
+
     }else{
       console.log('Escribe una letra que esté permitida')
     }
@@ -42,11 +47,19 @@ function App() {
 
   //RENDER
   const renderSolutionLetters = () => {
-    const wordLetters = word.split('');
-    wordLetters.map((letter) => {
-      <li class="letter">{letter}</li>
+    const wordLetters = word.split(''); //array de letras
+    const writtenLetter = wordLetters.map((letter, index) => { //se recorre el array de todas las letras escritas por el usuario
+      // nombreDeArray.find((elementoDeArray) => CONDICION PARA BUSCAR);
+        //Busca en userLetter a ver si encuentras letter (de una en una)
+      if(userLetters.find((userLetter) => userLetter === letter)) { //condición para cada una de las letras
+        return <li class="letter" id={index}>{letter}</li>
+      } else {
+        return <li class="letter" id={index}></li>
+      }      
     })
-  };
+  return writtenLetter;
+  }
+  
   return (
     <div className="page">
       <header>
@@ -57,7 +70,7 @@ function App() {
           <div className="solution">
             <h2 className="title">Solución:</h2>
             <ul className="letters">
-              {renderSolutionLetters}
+              {renderSolutionLetters()}
             </ul>
           </div>
           <div className="error">
