@@ -1,16 +1,22 @@
 import '../styles/App.scss';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
 
 //VARIABLES ESTADO
   const [numberOfErrors, setNumberOfErrors] = useState(0);
   const [lastLetter, setLastLetter] = useState('');
-  const [word, setWord] = useState('katakroker');
+  const [word, setWord] = useState('');
   const [userLetters, setuserLetters] = useState([]);
 
 //USE EFFECT
+  useEffect(() => {
+    fetch("https:dev.adalab.es/api/random/word")
+    .then((response) => response.json())
+    .then((data) => setWord(data.word))
+  }, []);
+
 
 //FUNCIONES HANDLER
   const handleSubmit = (ev) => {
@@ -30,12 +36,20 @@ function App() {
 
       if(event.target.value !== "") {
         setuserLetters([...userLetters, event.target.value]);
+        const errorLetters = userLetters.filter((userLetter) => !word.includes(userLetter));
+        setNumberOfErrors(errorLetters.length);
       }
-
+      console.log(numberOfErrors);
     }else{
       console.log('Escribe una letra que esté permitida')
     }
+
   };
+
+  
+
+
+
   // const handleLastLetter = (event) => {
   //   const regex = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü]/;
   //   if (event.target.value === '' || regex.test(event.target.value)){
@@ -46,13 +60,15 @@ function App() {
   // };
 
   //RENDER
+  
+
   const renderSolutionLetters = () => {
     const wordLetters = word.split(''); //array de letras
     const writtenLetter = wordLetters.map((letter, index) => { //se recorre el array de todas las letras escritas por el usuario
       // nombreDeArray.find((elementoDeArray) => CONDICION PARA BUSCAR);
         //Busca en userLetter a ver si encuentras letter (de una en una)
       if(userLetters.find((userLetter) => userLetter === letter)) { //condición para cada una de las letras
-        return <li class="letter" id={index}>{letter}</li>
+        return <li class="letter" id={index}>{letter}</li> //el return es obligatorio cuando hay llaves
       } else {
         return <li class="letter" id={index}></li>
       }      
@@ -60,6 +76,11 @@ function App() {
   return writtenLetter;
   }
   
+  const renderErrorLetters = () => {
+    const errorLetters = userLetters.filter((userLetter) => !word.includes(userLetter)); //queremos las letras que no se incluyen en word
+    return errorLetters.map((letter, index) =>  <li class="letter" id={index}>{letter}</li>);
+  }
+
   return (
     <div className="page">
       <header>
@@ -76,11 +97,7 @@ function App() {
           <div className="error">
             <h2 className="title">Letras falladas:</h2>
             <ul className="letters">
-              <li className="letter">f</li>
-              <li className="letter">q</li>
-              <li className="letter">h</li>
-              <li className="letter">p</li>
-              <li className="letter">x</li>
+              {renderErrorLetters()}
             </ul>
           </div>
           <form onSubmit={handleSubmit} className="form">
